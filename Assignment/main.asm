@@ -19,10 +19,31 @@
         db 10, " 7. Exit"
         db 10, "------------------------"
         db 10, "Please Select Your Choice: $"
+    
+    ; Invalid input message
+    invalidInputMessage db 10,10, "------------------ Error -------------------"
+        db 10, "Please, enter a valid number"
+        db 10, "--------------------------------------------$"
 
 
-; Code Segment;
+; Code Segment
 .code
+
+Exit proc
+    ; Terminate Program with 4ch function
+    mov ah, 4ch
+    int 21h
+Exit endp
+
+InvalidInput proc
+    ; Print Invalid Input message
+    mov ah, 09h
+    mov dx, offset invalidInputMessage
+    int 21h
+
+    ; Jump back to main
+    jmp Main
+InvalidInput endp
 
 ; Definition of Main procedure
 Main proc
@@ -39,9 +60,25 @@ Main proc
     ; DOS interrupt
     int 21h
 
-    ; Terminate Program with 4ch function
-    mov ah, 4ch
+    ; Receive character Input
+    mov ah, 01h
     int 21h
+
+    ; Conditions
+    cmp al, '1'
+    ; Check if input less than '1'
+    jb InvalidInput
+    cmp al, '7'
+    ; Check if input greater than '7'
+    ja InvalidInput
+
+
+    ; Exit if input is 7
+    cmp al, '7'
+    je exit
+
+    ; Terminate Program
+    call exit
 
 ; End of Main procedure
 main endp
